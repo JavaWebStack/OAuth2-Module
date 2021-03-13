@@ -1,23 +1,19 @@
 package org.javawebstack.passport.services.oauth2;
 
-import com.google.gson.annotations.SerializedName;
 import org.javawebstack.abstractdata.AbstractElement;
 import org.javawebstack.abstractdata.AbstractObject;
 import org.javawebstack.httpclient.HTTPClient;
 import org.javawebstack.httpserver.Exchange;
-import org.javawebstack.passport.models.PassportUser;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class InteraAppsOAuth2Service extends HTTPClient implements OAuth2Service {
     private final String clientId;
     private final String secret;
     private String[] scopes;
-    private UserTransformer userTransformer = (user)->{};
     private String redirectDomain;
 
     public InteraAppsOAuth2Service(String clientId, String secret, String redirectDomain){
@@ -33,7 +29,7 @@ public class InteraAppsOAuth2Service extends HTTPClient implements OAuth2Service
         return this;
     }
 
-    public PassportUser callback(Exchange exchange){
+    public OAuth2Callback callback(Exchange exchange){
         AbstractObject data = post("/authorization/oauth2/access_token")
                 .jsonBodyElement(new AbstractObject()
                         .set("client_id", clientId)
@@ -56,9 +52,20 @@ public class InteraAppsOAuth2Service extends HTTPClient implements OAuth2Service
             String accessToken = data.get("access_token").string();
 
             System.out.println("TRANSFORMING");
-            userTransformer.transform(get("/user")
+            AbstractObject userData = get("/user")
                             .header("x-auth-key", accessToken)
-                            .object(User.class));
+                            .data().object();
+            OAuth2Callback.Profile profile = new OAuth2Callback.Profile();
+            System.out.println(userData.toJson());
+            if (userData.has("id"))
+                profile.id = userData.get("id").number().toString();
+            if (userData.has("name"))
+                profile.name = userData.get("name").string();
+            if (userData.has("mail"))
+                profile.mail = userData.get("mail").string();
+            if (userData.has("profile_picture"))
+                profile.avatar = userData.get("profile_picture").string();
+            return new OAuth2Callback(accessToken, profile);
         }
 
         return null;
@@ -75,57 +82,10 @@ public class InteraAppsOAuth2Service extends HTTPClient implements OAuth2Service
         return "";
     }
 
-    public InteraAppsOAuth2Service userTransformer(UserTransformer userTransformer){
-        this.userTransformer = userTransformer;
-        return this;
-    }
 
     public String getName() {
         return "interaapps";
     }
 
-    public static class User {
-        private int id;
-        private String name;
-        private String mail;
-        private String birthday;
-        @SerializedName("favorite_color")
-        private String favoriteColor;
-        private String description;
-        @SerializedName("profile_picture")
-        private String profilePicture;
-
-        public int getId() {
-            return id;
-        }
-
-        public String getProfilePicture() {
-            return profilePicture;
-        }
-
-        public String getName() {
-            return name;
-        }
-
-        public String getBirthday() {
-            return birthday;
-        }
-
-        public String getDescription() {
-            return description;
-        }
-
-        public String getFavoriteColor() {
-            return favoriteColor;
-        }
-
-        public String getMail() {
-            return mail;
-        }
-    }
-
-    public interface UserTransformer {
-        void transform(User user);
-    }
 
 }

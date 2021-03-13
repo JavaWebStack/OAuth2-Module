@@ -1,13 +1,11 @@
 package org.javawebstack.passport.services.oauth2;
 
 import com.google.gson.annotations.SerializedName;
-import jdk.jfr.Name;
 import org.javawebstack.abstractdata.AbstractObject;
 import org.javawebstack.abstractdata.util.QueryString;
 import org.javawebstack.httpclient.HTTPClient;
 import org.javawebstack.httpserver.Exchange;
 import org.javawebstack.httpserver.helper.MimeType;
-import org.javawebstack.passport.models.PassportUser;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -18,7 +16,6 @@ public class GithubOAuth2Service extends HTTPClient implements OAuth2Service {
     private final String secret;
     private String[] scopes = new String[]{"read:user","user:email"};
     private String redirectDomain;
-    private UserTransformer userTransformer;
 
     public GithubOAuth2Service(String clientId, String secret, String redirectDomain){
         setBaseUrl("https://api.github.com");
@@ -36,7 +33,8 @@ public class GithubOAuth2Service extends HTTPClient implements OAuth2Service {
         return this;
     }
 
-    public PassportUser callback(Exchange exchange) {
+    public OAuth2Callback callback(Exchange exchange) {
+
         AbstractObject abstractObject = new HTTPClient("https://github.com").post("/login/oauth/access_token")
                 .formBodyString(new QueryString()
                         .set("client_id", clientId)
@@ -46,20 +44,29 @@ public class GithubOAuth2Service extends HTTPClient implements OAuth2Service {
                 .header("Accept", MimeType.JSON.getMimeTypes().get(0))
                 .data().object();
 
+
         if (abstractObject.has("scope")/* && abstractObject.get("scope").string().equals("read:user,user:email")*/) {
-            User user = get("/user")
+            OAuth2Callback.Profile profile = new OAuth2Callback.Profile();
+            AbstractObject userData = get("/user")
                     .header("Authorization", "token "+abstractObject.get("access_token"))
-                    .object(User.class);
+                    .data().object();
+
+            if (userData.has("id"))
+                profile.id = userData.get("id").number().toString();
+            if (userData.has("name"))
+                profile.name = userData.get("name").string();
+            if (userData.has("avatar_url"))
+                profile.avatar = userData.get("avatar_url").string();
 
             get("/user/emails")
                     .header("Authorization", "token "+abstractObject.get("access_token"))
                     .data().array().forEach(abstractElement -> {
-                if (user.mail == null)
-                    user.mail = abstractElement.object().get("email").string();
+                if (profile.mail == null) {
+                    profile.mail = abstractElement.object().get("email").string();
+                }
             });
 
-            userTransformer.transform(user);
-
+            return new OAuth2Callback(abstractObject.get("access_token").string(), profile);
         }
 
         return null;
@@ -76,10 +83,6 @@ public class GithubOAuth2Service extends HTTPClient implements OAuth2Service {
         return "";
     }
 
-    public GithubOAuth2Service userTransformer(UserTransformer userTransformer){
-        this.userTransformer = userTransformer;
-        return this;
-    }
 
     public static class User {
         private String id;
@@ -102,7 +105,4 @@ public class GithubOAuth2Service extends HTTPClient implements OAuth2Service {
         }
     }
 
-    public interface UserTransformer {
-        void transform(User user);
-    }
 }
