@@ -1,6 +1,5 @@
 package org.javawebstack.passport.services.oauth2;
 
-import com.google.gson.annotations.SerializedName;
 import org.javawebstack.abstractdata.AbstractObject;
 import org.javawebstack.abstractdata.util.QueryString;
 import org.javawebstack.httpclient.HTTPClient;
@@ -47,26 +46,7 @@ public class GithubOAuth2Service extends HTTPClient implements OAuth2Service {
 
         if (abstractObject.has("scope")/* && abstractObject.get("scope").string().equals("read:user,user:email")*/) {
             OAuth2Callback.Profile profile = new OAuth2Callback.Profile();
-            AbstractObject userData = get("/user")
-                    .header("Authorization", "token "+abstractObject.get("access_token"))
-                    .data().object();
-
-            if (userData.has("id"))
-                profile.id = userData.get("id").number().toString();
-            if (userData.has("name"))
-                profile.name = userData.get("name").string();
-            if (userData.has("avatar_url"))
-                profile.avatar = userData.get("avatar_url").string();
-
-            get("/user/emails")
-                    .header("Authorization", "token "+abstractObject.get("access_token"))
-                    .data().array().forEach(abstractElement -> {
-                if (profile.mail == null) {
-                    profile.mail = abstractElement.object().get("email").string();
-                }
-            });
-
-            return new OAuth2Callback(abstractObject.get("access_token").string(), profile, new HTTPClient("https://api.github.com").header("Authorization", "token "+abstractObject.get("access_token").string()));
+            return new OAuth2Callback(abstractObject.get("access_token").string(), getProfile(abstractObject.get("access_token").string()), new HTTPClient("https://api.github.com").header("Authorization", "token "+abstractObject.get("access_token").string()));
         }
 
         return null;
@@ -83,6 +63,28 @@ public class GithubOAuth2Service extends HTTPClient implements OAuth2Service {
         return "";
     }
 
+    @Override
+    public OAuth2Callback.Profile getProfile(String accessToken) {OAuth2Callback.Profile profile = new OAuth2Callback.Profile();
+        AbstractObject userData = get("/user")
+                .header("Authorization", "token "+accessToken)
+                .data().object();
+
+        if (userData.has("id"))
+            profile.id = userData.get("id").number().toString();
+        if (userData.has("name"))
+            profile.name = userData.get("name").string();
+        if (userData.has("avatar_url"))
+            profile.avatar = userData.get("avatar_url").string();
+
+        get("/user/emails")
+                .header("Authorization", "token "+accessToken)
+                .data().array().forEach(abstractElement -> {
+            if (profile.mail == null) {
+                profile.mail = abstractElement.object().get("email").string();
+            }
+        });
+        return profile;
+    }
 
 
 }

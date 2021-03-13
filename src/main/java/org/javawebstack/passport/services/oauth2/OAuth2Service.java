@@ -7,4 +7,6 @@ public interface OAuth2Service extends AuthService {
     OAuth2Callback callback(Exchange exchange);
 
     Object redirect(Exchange exchange, String redirectPathPrefix);
+
+    OAuth2Callback.Profile getProfile(String accessToken);
 }

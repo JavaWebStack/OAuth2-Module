@@ -57,36 +57,16 @@ public class GoogleOAuth2Service extends HTTPClient implements OAuth2Service {
 
     public OAuth2Callback callback(Exchange exchange) {
         GoogleTokenResponse code = null;
-        System.out.println(exchange.rawRequest().getParameter("code"));
         try {
             code = googleAuthorizationCodeFlow.newTokenRequest(exchange.rawRequest().getParameter("code")).execute();
         } catch (IOException e) {
             e.printStackTrace();
             throw new RuntimeException();
         }
-        Credential credential = new GoogleCredential.Builder()
-                .setTransport(new NetHttpTransport())
-                .setJsonFactory(GsonFactory.getDefaultInstance())
-                .setClientSecrets(clientId, secret)
-                .build();
-
-        credential.setFromTokenResponse(code);
-        Oauth2 oauth2 = new Oauth2.Builder(
-                new NetHttpTransport(),
-                GsonFactory.getDefaultInstance(),
-                credential
-        ).setApplicationName(clientId).build();
-        try {
-            OAuth2Callback.Profile profile = new OAuth2Callback.Profile();
-            Userinfo userinfo = oauth2.userinfo().get().execute();
-            profile.id     = userinfo.getId();
-            profile.name   = userinfo.getName();
-            profile.avatar = userinfo.getPicture();
-            profile.mail   = userinfo.getEmail();
+        OAuth2Callback.Profile profile = getProfile(code.getAccessToken());
+        if (profile != null)
             return new OAuth2Callback(code.getAccessToken(), profile, new HTTPClient("https://oauth2.googleapis.com").bearer(code.getAccessToken()));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+
         return null;
     }
 
@@ -100,6 +80,34 @@ public class GoogleOAuth2Service extends HTTPClient implements OAuth2Service {
                     .build()
         );
         return "";
+    }
+
+    @Override
+    public OAuth2Callback.Profile getProfile(String accessToken) {
+        Credential credential = new GoogleCredential.Builder()
+                .setTransport(new NetHttpTransport())
+                .setJsonFactory(GsonFactory.getDefaultInstance())
+                .setClientSecrets(clientId, secret)
+                .build().setAccessToken(accessToken);
+
+        Oauth2 oauth2 = new Oauth2.Builder(
+                new NetHttpTransport(),
+                GsonFactory.getDefaultInstance(),
+                credential
+        ).setApplicationName(clientId).build();
+        try {
+            OAuth2Callback.Profile profile = new OAuth2Callback.Profile();
+            Userinfo userinfo = oauth2.userinfo().get().execute();
+            profile.id     = userinfo.getId();
+            profile.name   = userinfo.getName();
+            profile.avatar = userinfo.getPicture();
+            profile.mail   = userinfo.getEmail();
+            return profile;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return null;
     }
 
 }
