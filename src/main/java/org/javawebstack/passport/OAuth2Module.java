@@ -38,7 +38,7 @@ public class OAuth2Module implements Module {
     }
 
     public void setupInjection(WebApplication application, Injector injector) {
-
+        injector.setInstance(OAuth2Module.class, this);
     }
 
     public void setupModels(WebApplication application, SQL sql) throws ORMConfigurationException {
