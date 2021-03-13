@@ -15,7 +15,8 @@ import java.util.List;
 
 public class OAuth2Module implements Module {
 
-    public List<AuthService> services;
+    private final List<AuthService> services;
+    private String pathPrefix = "/authorization/oauth2/";
 
     private OAuth2CallbackHandler oAuth2Callback = (service, exchange, callback, token, httpClient)->null;
 
@@ -27,8 +28,8 @@ public class OAuth2Module implements Module {
         services.forEach(service -> {
             service.setupServer(server);
             if (service instanceof OAuth2Service) {
-                server.get("/authorization/oauth2/"+service.getName(), ((OAuth2Service) service)::redirect);
-                server.get("/authorization/oauth2/"+service.getName()+"/callback", exchange -> {
+                server.get(pathPrefix+service.getName(), exchange -> ((OAuth2Service) service).redirect(exchange, pathPrefix));
+                server.get(pathPrefix+service.getName()+"/callback", exchange -> {
                     OAuth2Callback callback = ((OAuth2Service) service).callback(exchange);
                     return oAuth2Callback.callback(service.getName(), exchange, callback, callback.getToken(), callback.getHttpClient());
                 });
@@ -51,5 +52,10 @@ public class OAuth2Module implements Module {
 
     public void setOAuth2Callback(OAuth2CallbackHandler oAuth2Callback) {
         this.oAuth2Callback = oAuth2Callback;
+    }
+
+    public OAuth2Module setPathPrefix(String pathPrefix) {
+        this.pathPrefix = pathPrefix;
+        return this;
     }
 }

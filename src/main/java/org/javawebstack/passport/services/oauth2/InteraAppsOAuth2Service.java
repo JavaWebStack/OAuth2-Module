@@ -71,10 +71,9 @@ public class InteraAppsOAuth2Service extends HTTPClient implements OAuth2Service
         return null;
     }
 
-    @Override
-    public Object redirect(Exchange exchange) {
+    public Object redirect(Exchange exchange, String redirectPathPrefix) {
         try {
-            exchange.redirect("https://accounts.interaapps.de/auth/oauth2?client_id="+clientId+"&scope="+URLEncoder.encode(String.join(" ", scopes), "UTF-8")+"&redirect_uri="+URLEncoder.encode(redirectDomain+"/authorization/oauth2/"+getName()+"/callback", "UTF-8"));
+            exchange.redirect("https://accounts.interaapps.de/auth/oauth2?client_id="+clientId+"&scope="+URLEncoder.encode(String.join(" ", scopes), "UTF-8")+"&redirect_uri="+URLEncoder.encode(redirectDomain+redirectPathPrefix+"/"+getName()+"/callback", "UTF-8"));
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
             return null;
