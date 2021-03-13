@@ -25,6 +25,7 @@ public class OAuth2Module implements Module {
 
     public void setupServer(WebApplication application, HTTPServer server) {
         services.forEach(service -> {
+            service.setupServer(server);
             if (service instanceof OAuth2Service) {
                 server.get("/authorization/oauth2/"+service.getName(), ((OAuth2Service) service)::redirect);
                 server.get("/authorization/oauth2/"+service.getName()+"/callback", exchange -> {
