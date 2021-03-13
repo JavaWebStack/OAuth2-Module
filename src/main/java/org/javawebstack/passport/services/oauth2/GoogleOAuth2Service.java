@@ -49,6 +49,7 @@ public class GoogleOAuth2Service extends HTTPClient implements OAuth2Service {
     }
 
     public GoogleOAuth2Service setScopes(String[] scopes) {
+        googleAuthorizationCodeFlow.getScopes().clear();
         for (String scope : scopes) {
             googleAuthorizationCodeFlow.getScopes().add(scope);
         }
