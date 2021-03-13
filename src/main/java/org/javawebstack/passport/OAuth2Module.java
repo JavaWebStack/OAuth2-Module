@@ -17,7 +17,7 @@ public class OAuth2Module implements Module {
 
     public List<AuthService> services;
 
-    private OAuth2CallbackHandler oAuth2Callback = (exchange, callback)->null;
+    private OAuth2CallbackHandler oAuth2Callback = (service, exchange, callback, token, httpClient)->null;
 
     public OAuth2Module(){
         services = new ArrayList<>();
@@ -29,7 +29,7 @@ public class OAuth2Module implements Module {
                 server.get("/authorization/oauth2/"+service.getName(), ((OAuth2Service) service)::redirect);
                 server.get("/authorization/oauth2/"+service.getName()+"/callback", exchange -> {
                     OAuth2Callback callback = ((OAuth2Service) service).callback(exchange);
-                    return oAuth2Callback.callback(exchange, callback);
+                    return oAuth2Callback.callback(service.getName(), exchange, callback, callback.getToken(), callback.getHttpClient());
                 });
             }
         });

@@ -66,7 +66,7 @@ public class GithubOAuth2Service extends HTTPClient implements OAuth2Service {
                 }
             });
 
-            return new OAuth2Callback(abstractObject.get("access_token").string(), profile);
+            return new OAuth2Callback(abstractObject.get("access_token").string(), profile, new HTTPClient("https://api.github.com").header("Authorization", "token "+abstractObject.get("access_token").string()));
         }
 
         return null;

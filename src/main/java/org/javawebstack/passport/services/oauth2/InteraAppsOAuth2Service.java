@@ -65,7 +65,7 @@ public class InteraAppsOAuth2Service extends HTTPClient implements OAuth2Service
                 profile.mail = userData.get("mail").string();
             if (userData.has("profile_picture"))
                 profile.avatar = userData.get("profile_picture").string();
-            return new OAuth2Callback(accessToken, profile);
+            return new OAuth2Callback(accessToken, profile, new HTTPClient("https://accounts.interaapps.de/").header("x-auth-key", accessToken));
         }
 
         return null;
