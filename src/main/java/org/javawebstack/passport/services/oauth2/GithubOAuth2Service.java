@@ -84,25 +84,5 @@ public class GithubOAuth2Service extends HTTPClient implements OAuth2Service {
     }
 
 
-    public static class User {
-        private String id;
-        @SerializedName("login")
-        private String name;
-        private String mail;
-        @SerializedName("avatar_url")
-        private String profilePicture;
-
-        public String getMail() {
-            return mail;
-        }
-
-        public String getName() {
-            return name;
-        }
-
-        public String getId() {
-            return id;
-        }
-    }
 
 }
