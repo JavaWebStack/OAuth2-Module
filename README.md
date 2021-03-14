@@ -10,14 +10,7 @@ JWS-Passport
 ![Twitter Follow](https://img.shields.io/twitter/follow/JavaWebStack?style=social)
 
 ## Introduction
-When it came to using an ORM Lib in java I used ORMLite before. It worked quite well, but I didn't like the query builder.
-
-Another thing was that I wanted to have control over the JDBC Wrapper to have a simple way of implementing an auto-reconnect function, if it gets disconnected for some reason.
-
-I finally decided to make an own ORM that fits my needs and here it is.
-
-## Documentation
-You can find the current docs on our [website](https://docs.javawebstack.org/framework/orm). This is a work-in-progress project though so it's not yet complete.
+Passport is a JWS-Module which allows you to create easily Authentication in your WebApp. The OAuth2 Support gives you a unified way of implementing OAuth2-Authorization in your WebApp
 
 ### Example usage
 
@@ -29,7 +22,8 @@ class MyApp extends WebApplication {
         OAuth2Module oAuth2Module = new OAuth2Module();
         oAuth2Module
                 .addService(new GithubOAuth2Service("", "", /*Redirect Host*/ "http://localhost:2222"))
-                .setOAuth2Callback((service, exchange, callback, token, httpClient) -> {
+                .setOAuth2Callback((service, exchange, callback) -> {
+                    System.out.println("Someone logged in with "+service);
                     return "Hello "+callback.getProfile().name;
                 });
         addModule(oAuth2Module);
