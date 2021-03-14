@@ -53,6 +53,10 @@ public class OAuth2Module implements Module {
         return this;
     }
 
+    public List<AuthService> getServices() {
+        return services;
+    }
+
     public void setOAuth2Callback(OAuth2CallbackHandler oAuth2Callback) {
         this.oAuth2Callback = oAuth2Callback;
     }
