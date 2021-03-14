@@ -4,6 +4,7 @@ import org.javawebstack.abstractdata.AbstractElement;
 import org.javawebstack.abstractdata.AbstractObject;
 import org.javawebstack.httpclient.HTTPClient;
 import org.javawebstack.httpserver.Exchange;
+import org.javawebstack.passport.Profile;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -51,7 +52,7 @@ public class InteraAppsOAuth2Service extends HTTPClient implements OAuth2Service
             String accessToken = data.get("access_token").string();
 
 
-            return new OAuth2Callback(accessToken, getProfile(accessToken), new HTTPClient("https://accounts.interaapps.de/").header("x-auth-key", accessToken));
+            return new OAuth2Callback(accessToken, getProfile(accessToken), new HTTPClient("https://accounts.interaapps.de/").header("x-auth-key", accessToken)).setRefreshToken(data.get("refresh_token").string());
         }
 
         return null;
@@ -67,11 +68,11 @@ public class InteraAppsOAuth2Service extends HTTPClient implements OAuth2Service
         return "";
     }
 
-    public OAuth2Callback.Profile getProfile(String accessToken) {
+    public Profile getProfile(String accessToken) {
         AbstractObject userData = get("/user")
                 .header("x-auth-key", accessToken)
                 .data().object();
-        OAuth2Callback.Profile profile = new OAuth2Callback.Profile();
+        Profile profile = new Profile();
 
         if (userData.has("id"))
             profile.id = userData.get("id").number().toString();
@@ -89,5 +90,15 @@ public class InteraAppsOAuth2Service extends HTTPClient implements OAuth2Service
         return "interaapps";
     }
 
+    public String refreshToken(String refreshToken){
+        return post("/authorization/oauth2/access_token")
+                .jsonBodyElement(new AbstractObject()
+                        .set("client_id", clientId)
+                        .set("client_secret", secret)
+                        .set("code", refreshToken)
+                )
+                .data()
+                .object().get("access_token").string();
+    }
 
 }

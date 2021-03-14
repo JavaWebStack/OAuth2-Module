@@ -5,6 +5,7 @@ import org.javawebstack.abstractdata.util.QueryString;
 import org.javawebstack.httpclient.HTTPClient;
 import org.javawebstack.httpserver.Exchange;
 import org.javawebstack.httpserver.helper.MimeType;
+import org.javawebstack.passport.Profile;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -45,7 +46,7 @@ public class GithubOAuth2Service extends HTTPClient implements OAuth2Service {
 
 
         if (abstractObject.has("scope")/* && abstractObject.get("scope").string().equals("read:user,user:email")*/) {
-            OAuth2Callback.Profile profile = new OAuth2Callback.Profile();
+            Profile profile = new Profile();
             return new OAuth2Callback(abstractObject.get("access_token").string(), getProfile(abstractObject.get("access_token").string()), new HTTPClient("https://api.github.com").header("Authorization", "token "+abstractObject.get("access_token").string()));
         }
 
@@ -55,7 +56,7 @@ public class GithubOAuth2Service extends HTTPClient implements OAuth2Service {
 
     public Object redirect(Exchange exchange, String redirectPathPrefix) {
         try {
-            exchange.redirect("https://github.com/login/oauth/authorize?client_id="+clientId+"&scope="+ URLEncoder.encode(String.join(" ", scopes), "UTF-8")+"&redirect_uri="+URLEncoder.encode(redirectDomain+redirectPathPrefix+"/"+getName()+"/callback", "UTF-8"));
+            exchange.redirect("https://github.com/login/oauth/authorize?client_id="+clientId+"&scope="+ URLEncoder.encode(String.join(" ", scopes), "UTF-8")+"&redirect_uri="+URLEncoder.encode(redirectDomain+redirectPathPrefix+getName()+"/callback", "UTF-8"));
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
             return null;
@@ -64,7 +65,8 @@ public class GithubOAuth2Service extends HTTPClient implements OAuth2Service {
     }
 
     @Override
-    public OAuth2Callback.Profile getProfile(String accessToken) {OAuth2Callback.Profile profile = new OAuth2Callback.Profile();
+    public Profile getProfile(String accessToken) {
+        Profile profile = new Profile();
         AbstractObject userData = get("/user")
                 .header("Authorization", "token "+accessToken)
                 .data().object();

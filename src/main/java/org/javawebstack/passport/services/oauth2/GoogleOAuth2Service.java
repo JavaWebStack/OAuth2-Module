@@ -8,16 +8,11 @@ import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.gson.GsonFactory;
 import com.google.api.services.oauth2.Oauth2;
 import com.google.api.services.oauth2.model.Userinfo;
-import com.google.gson.annotations.SerializedName;
-import org.javawebstack.abstractdata.AbstractObject;
-import org.javawebstack.abstractdata.util.QueryString;
 import org.javawebstack.httpclient.HTTPClient;
 import org.javawebstack.httpserver.Exchange;
-import org.javawebstack.httpserver.helper.MimeType;
+import org.javawebstack.passport.Profile;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.util.Arrays;
 
 
@@ -59,14 +54,16 @@ public class GoogleOAuth2Service extends HTTPClient implements OAuth2Service {
     public OAuth2Callback callback(Exchange exchange) {
         GoogleTokenResponse code = null;
         try {
-            code = googleAuthorizationCodeFlow.newTokenRequest(exchange.rawRequest().getParameter("code")).execute();
+            code = googleAuthorizationCodeFlow.newTokenRequest(exchange.rawRequest().getParameter("code"))
+                    .setRedirectUri(redirectDomain+"/authorization/oauth2/"+getName()+"/callback")
+                    .execute();
         } catch (IOException e) {
             e.printStackTrace();
             throw new RuntimeException();
         }
-        OAuth2Callback.Profile profile = getProfile(code.getAccessToken());
+        Profile profile = getProfile(code.getAccessToken());
         if (profile != null)
-            return new OAuth2Callback(code.getAccessToken(), profile, new HTTPClient("https://oauth2.googleapis.com").bearer(code.getAccessToken()));
+            return new OAuth2Callback(code.getAccessToken(), profile, new HTTPClient("https://oauth2.googleapis.com").bearer(code.getAccessToken())).setRefreshToken(code.getRefreshToken());
 
         return null;
     }
@@ -77,14 +74,14 @@ public class GoogleOAuth2Service extends HTTPClient implements OAuth2Service {
                 googleAuthorizationCodeFlow
                     .newAuthorizationUrl()
                     .setAccessType("offline")
-                    .setRedirectUri(redirectDomain+redirectPathPrefix+"/"+getName()+"/callback")
+                    .setRedirectUri(redirectDomain+redirectPathPrefix+getName()+"/callback")
                     .build()
         );
         return "";
     }
 
     @Override
-    public OAuth2Callback.Profile getProfile(String accessToken) {
+    public Profile getProfile(String accessToken) {
         Credential credential = new GoogleCredential.Builder()
                 .setTransport(new NetHttpTransport())
                 .setJsonFactory(GsonFactory.getDefaultInstance())
@@ -97,7 +94,7 @@ public class GoogleOAuth2Service extends HTTPClient implements OAuth2Service {
                 credential
         ).setApplicationName(clientId).build();
         try {
-            OAuth2Callback.Profile profile = new OAuth2Callback.Profile();
+            Profile profile = new Profile();
             Userinfo userinfo = oauth2.userinfo().get().execute();
             profile.id     = userinfo.getId();
             profile.name   = userinfo.getName();
@@ -111,4 +108,11 @@ public class GoogleOAuth2Service extends HTTPClient implements OAuth2Service {
         return null;
     }
 
+    public GoogleAuthorizationCodeFlow getGoogleAuthorizationCodeFlow() {
+        return googleAuthorizationCodeFlow;
+    }
+
+    public String refreshToken(String refreshToken){
+        return googleAuthorizationCodeFlow.newTokenRequest(refreshToken).getCode();
+    }
 }

@@ -1,11 +1,13 @@
 package org.javawebstack.passport.services.oauth2;
 
 import org.javawebstack.httpclient.HTTPClient;
+import org.javawebstack.passport.Profile;
 
 public class OAuth2Callback {
     private String token;
     private Profile profile;
     private HTTPClient httpClient;
+    private String refreshToken;
 
     public OAuth2Callback(String token, Profile profile, HTTPClient httpClient) {
         this.token = token;
@@ -25,10 +27,13 @@ public class OAuth2Callback {
         return httpClient;
     }
 
-    public static class Profile {
-        public String id;
-        public String name;
-        public String mail;
-        public String avatar;
+    public OAuth2Callback setRefreshToken(String refreshToken) {
+        this.refreshToken = refreshToken;
+        return this;
     }
+
+    public String getRefreshToken() {
+        return refreshToken;
+    }
+
 }
