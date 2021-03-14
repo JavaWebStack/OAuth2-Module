@@ -5,7 +5,7 @@ JWS-Passport
 
 ![GitHub Workflow Status (branch)](https://img.shields.io/github/workflow/status/JavaWebStack/Passport/Maven%20Deploy/master)
 ![GitHub](https://img.shields.io/github/license/JavaWebStack/Passport)
-![Lines of code](https://img.shields.io/tokei/lines/github/JavaWebStack/ORM)
+![Lines of code](https://img.shields.io/tokei/lines/github/JavaWebStack/Passport)
 ![Discord](https://img.shields.io/discord/815612319378833408?color=%237289DA&label=discord)
 ![Twitter Follow](https://img.shields.io/twitter/follow/JavaWebStack?style=social)
 
