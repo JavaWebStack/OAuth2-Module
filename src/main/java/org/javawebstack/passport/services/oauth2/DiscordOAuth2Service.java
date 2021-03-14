@@ -46,8 +46,6 @@ public class DiscordOAuth2Service extends HTTPClient implements OAuth2Service {
                 )
                 .data().object();
 
-        System.out.println(abstractObject.toJson());
-
         return new OAuth2Callback(
                 abstractObject.get("access_token").string(),
                 getProfile(abstractObject.get("access_token").string()),
@@ -88,6 +86,8 @@ public class DiscordOAuth2Service extends HTTPClient implements OAuth2Service {
 
         if (data.has("email"))
             profile.mail = data.get("email").string();
+
+        data.forEach(profile::set);
 
         return profile;
     }

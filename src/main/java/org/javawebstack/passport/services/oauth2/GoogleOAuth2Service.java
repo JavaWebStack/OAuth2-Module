@@ -100,6 +100,9 @@ public class GoogleOAuth2Service extends HTTPClient implements OAuth2Service {
             profile.name   = userinfo.getName();
             profile.avatar = userinfo.getPicture();
             profile.mail   = userinfo.getEmail();
+            userinfo.forEach((key, val)->{
+                profile.set(key, val.toString());
+            });
             return profile;
         } catch (IOException e) {
             e.printStackTrace();

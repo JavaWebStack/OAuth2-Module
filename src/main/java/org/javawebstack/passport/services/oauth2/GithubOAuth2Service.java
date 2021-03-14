@@ -78,6 +78,8 @@ public class GithubOAuth2Service extends HTTPClient implements OAuth2Service {
         if (userData.has("avatar_url"))
             profile.avatar = userData.get("avatar_url").string();
 
+        userData.forEach(profile::set);
+
         get("/user/emails")
                 .header("Authorization", "token "+accessToken)
                 .data().array().forEach(abstractElement -> {
