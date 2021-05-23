@@ -3,7 +3,6 @@ package org.javawebstack.passport;
 import org.javawebstack.framework.WebApplication;
 import org.javawebstack.framework.module.Module;
 import org.javawebstack.httpserver.HTTPServer;
-import org.javawebstack.injector.Injector;
 import org.javawebstack.orm.exception.ORMConfigurationException;
 import org.javawebstack.orm.wrapper.SQL;
 import org.javawebstack.passport.services.oauth2.OAuth2Callback;
@@ -24,7 +23,7 @@ public class OAuth2Module implements Module {
         services = new ArrayList<>();
     }
 
-    public void setupServer(WebApplication application, HTTPServer server) {
+    public void beforeSetupServer(WebApplication application, HTTPServer server) {
         services.forEach(service -> {
             service.setupServer(server);
             if (service instanceof OAuth2Service) {
@@ -34,13 +33,6 @@ public class OAuth2Module implements Module {
                     return oAuth2Callback.callback(service.getName(), exchange, callback);
                 });
             }
-        });
-    }
-
-    public void setupInjection(WebApplication application, Injector injector) {
-        injector.setInstance(OAuth2Module.class, this);
-        services.forEach(authService -> {
-            injector.setInstance((Class<? super AuthService>) authService.getClass(), authService);
         });
     }
 
