@@ -30,6 +30,7 @@ public class OAuth2Module implements Module {
                 server.get(pathPrefix+service.getName(), exchange -> ((OAuth2Service) service).redirect(exchange, pathPrefix));
                 server.get(pathPrefix+service.getName()+"/callback", exchange -> {
                     OAuth2Callback callback = ((OAuth2Service) service).callback(exchange);
+
                     return oAuth2Callback.callback(service.getName(), exchange, callback);
                 });
             }
@@ -56,5 +57,9 @@ public class OAuth2Module implements Module {
     public OAuth2Module setPathPrefix(String pathPrefix) {
         this.pathPrefix = pathPrefix;
         return this;
+    }
+
+    public String getPathPrefix() {
+        return pathPrefix;
     }
 }

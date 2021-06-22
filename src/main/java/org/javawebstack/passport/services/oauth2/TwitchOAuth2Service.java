@@ -5,6 +5,7 @@ import org.javawebstack.abstractdata.util.QueryString;
 import org.javawebstack.httpclient.HTTPClient;
 import org.javawebstack.httpserver.Exchange;
 import org.javawebstack.httpserver.helper.MimeType;
+import org.javawebstack.passport.OAuth2Module;
 import org.javawebstack.passport.Profile;
 
 import java.io.UnsupportedEncodingException;
@@ -14,14 +15,16 @@ public class TwitchOAuth2Service extends HTTPClient implements OAuth2Service {
     private final String clientId;
     private final String clientSecret;
     private String[] scopes = new String[]{"user:read:email"}; // reference: https://dev.twitch.tv/docs/authentication/#scopes
-    private final String redirectUri;
+    private final String redirectDomain;
     private boolean forceVerify = false;
     private String state;
+    private OAuth2Module oAuth2Module;
 
-    public TwitchOAuth2Service(String clientId, String redirectUri, String clientSecret) {
+    public TwitchOAuth2Service(String clientId, String clientSecret, String redirectDomain, OAuth2Module oAuth2Module) {
+        this.oAuth2Module = oAuth2Module;
         setBaseUrl("https://api.twitch.tv/helix");
         this.clientId = clientId;
-        this.redirectUri = redirectUri;
+        this.redirectDomain = redirectDomain;
         this.clientSecret = clientSecret;
     }
 
@@ -59,7 +62,7 @@ public class TwitchOAuth2Service extends HTTPClient implements OAuth2Service {
                     .set("client_secret", clientSecret)
                     .set("code", exchange.rawRequest().getParameter("code"))
                     .set("grant_type", "authorization_code")
-                    .set("redirect_uri", redirectUri)
+                    .set("redirect_uri", createRedirectUrl(oAuth2Module.getPathPrefix()))
                     .toString())
                 .header("Accept", MimeType.JSON.getMimeTypes().get(0))
                 .data().object();
@@ -74,7 +77,7 @@ public class TwitchOAuth2Service extends HTTPClient implements OAuth2Service {
 
     public Object redirect(Exchange exchange, String redirectPathPrefix) {
         try {
-            exchange.redirect("https://id.twitch.tv/oauth2/authorize?client_id="+clientId+"&response_type=code&scope="+ URLEncoder.encode(String.join(" ", scopes), "UTF-8")+"&redirect_uri="+URLEncoder.encode(redirectUri+redirectPathPrefix+getName()+"/callback", "UTF-8")+"&force_verify="+forceVerify+"&state="+state);
+            exchange.redirect("https://id.twitch.tv/oauth2/authorize?client_id="+clientId+"&response_type=code&scope="+ URLEncoder.encode(String.join(" ", scopes), "UTF-8")+"&redirect_uri="+URLEncoder.encode(createRedirectUrl(redirectPathPrefix), "UTF-8")+"&force_verify="+forceVerify+"&state="+state);
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
             return null;
@@ -82,15 +85,20 @@ public class TwitchOAuth2Service extends HTTPClient implements OAuth2Service {
         return "";
     }
 
+    private String createRedirectUrl(String redirectPathPrefix){
+        return redirectDomain +redirectPathPrefix+getName()+"/callback";
+    }
+
     public Profile getProfile(String accessToken) {
         Profile profile = new Profile();
 
         AbstractObject userData = get("/users")
                 .bearer(accessToken)
+                .header("Client-Id", clientId)
                 .data().object().get("data").array().get(0).object();
 
         if (userData.has("id"))
-            profile.id = userData.get("id").number().toString();
+            profile.id = userData.get("id").string();
         if (userData.has("login"))
             profile.name = userData.get("login").string();
         if (userData.has("profile_image_url"))
