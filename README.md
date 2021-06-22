@@ -63,3 +63,4 @@ Google|GoogleOAuth2Service|[Google Developer Console](https://console.developers
 Discord|DiscordOAuth2Service|[Discord Developer Portal](https://discord.com/developers/applications)|-
 Facebook|FacebookOAuth2Service|[Facebook Developer Center](https://console.developers.google.com/)|TODO
 InteraApps|InteraAppsOAuth2Service|[IA-Accounts Developer Center](https://accounts.interaapps.de/developers/projects)|-
+Twitch|TwitchOAuth2Service|[Twitch Developers](https://dev.twitch.tv/)|Implements the OAuth authorization code flow
