@@ -66,7 +66,7 @@ public class TwitchOAuth2Service extends HTTPClient implements OAuth2Service {
 
         if (abstractObject.has("scope")) {
             String accessToken = abstractObject.get("access_token").string();
-            return new OAuth2Callback(accessToken, getProfile(accessToken), new HTTPClient("https://api.twitch.tv/helix").header("Authorization", "Bearer " + accessToken));
+            return new OAuth2Callback(accessToken, getProfile(accessToken), new HTTPClient("https://api.twitch.tv/helix").bearer(accessToken));
         }
 
         return null;
@@ -86,7 +86,7 @@ public class TwitchOAuth2Service extends HTTPClient implements OAuth2Service {
         Profile profile = new Profile();
 
         AbstractObject userData = get("/users")
-                .header("Authorization", "Bearer "+accessToken)
+                .bearer(accessToken)
                 .data().object().get("data").array().get(0).object();
 
         if (userData.has("id"))
