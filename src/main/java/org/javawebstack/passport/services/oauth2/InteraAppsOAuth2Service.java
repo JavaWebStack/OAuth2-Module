@@ -52,7 +52,7 @@ public class InteraAppsOAuth2Service extends HTTPClient implements OAuth2Service
             String accessToken = data.get("access_token").string();
 
 
-            return new OAuth2Callback(accessToken, getProfile(accessToken), new HTTPClient("https://accounts.interaapps.de/").header("x-auth-key", accessToken)).setRefreshToken(data.get("refresh_token").string());
+            return new OAuth2Callback(accessToken, getProfile(accessToken), new HTTPClient("https://accounts.interaapps.de/").bearer(accessToken)).setRefreshToken(data.get("refresh_token").string());
         }
 
         return null;
@@ -70,7 +70,7 @@ public class InteraAppsOAuth2Service extends HTTPClient implements OAuth2Service
 
     public Profile getProfile(String accessToken) {
         AbstractObject userData = get("/user")
-                .header("x-auth-key", accessToken)
+                .bearer(accessToken)
                 .data().object();
         Profile profile = new Profile();
 
