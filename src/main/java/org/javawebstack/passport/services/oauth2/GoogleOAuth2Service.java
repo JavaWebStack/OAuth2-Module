@@ -63,7 +63,7 @@ public class GoogleOAuth2Service extends HTTPClient implements OAuth2Service {
         }
         Profile profile = getProfile(code.getAccessToken());
         if (profile != null)
-            return new OAuth2Callback(code.getAccessToken(), profile, new HTTPClient("https://oauth2.googleapis.com").bearer(code.getAccessToken())).setRefreshToken(code.getRefreshToken());
+            return new OAuth2Callback(code.getAccessToken(), profile, new HTTPClient("https://www.googleapis.com/oauth2/v1").bearer(code.getAccessToken())).setRefreshToken(code.getRefreshToken());
 
         return null;
     }

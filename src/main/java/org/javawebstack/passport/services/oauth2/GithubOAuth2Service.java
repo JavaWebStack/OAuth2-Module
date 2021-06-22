@@ -47,7 +47,7 @@ public class GithubOAuth2Service extends HTTPClient implements OAuth2Service {
 
         if (abstractObject.has("scope")/* && abstractObject.get("scope").string().equals("read:user,user:email")*/) {
             Profile profile = new Profile();
-            return new OAuth2Callback(abstractObject.get("access_token").string(), getProfile(abstractObject.get("access_token").string()), new HTTPClient("https://api.github.com").header("Authorization", "token "+abstractObject.get("access_token").string()));
+            return new OAuth2Callback(abstractObject.get("access_token").string(), getProfile(abstractObject.get("access_token").string()), new HTTPClient("https://api.github.com").authorization("token", abstractObject.get("access_token").string()));
         }
 
         return null;
@@ -81,7 +81,7 @@ public class GithubOAuth2Service extends HTTPClient implements OAuth2Service {
         userData.forEach(profile::set);
 
         get("/user/emails")
-                .header("Authorization", "token "+accessToken)
+                .authorization("token", accessToken)
                 .data().array().forEach(abstractElement -> {
             if (profile.mail == null) {
                 profile.mail = abstractElement.object().get("email").string();
