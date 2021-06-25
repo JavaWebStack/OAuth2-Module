@@ -1,5 +1,6 @@
 package org.javawebstack.passport.services.oauth2;
 
+import com.google.gson.Gson;
 import org.javawebstack.abstractdata.AbstractObject;
 import org.javawebstack.abstractdata.util.QueryString;
 import org.javawebstack.httpclient.HTTPClient;
@@ -78,7 +79,7 @@ public class DiscordOAuth2Service extends HTTPClient implements OAuth2Service {
             profile.id = data.get("id").string();
 
             if (data.has("avatar"))
-                profile.name = "https://cdn.discordapp.com/avatars/"+profile.id+"/"+data.get("avatar").string()+".png";
+                profile.avatar = "https://cdn.discordapp.com/avatars/"+profile.id+"/"+data.get("avatar").string()+".png";
         }
 
         if (data.has("username"))
