@@ -5,6 +5,7 @@ import org.javawebstack.abstractdata.AbstractObject;
 import org.javawebstack.abstractdata.util.QueryString;
 import org.javawebstack.httpclient.HTTPClient;
 import org.javawebstack.httpserver.Exchange;
+import org.javawebstack.passport.OAuth2Module;
 import org.javawebstack.passport.Profile;
 
 import java.io.UnsupportedEncodingException;
@@ -33,7 +34,7 @@ public class DiscordOAuth2Service extends HTTPClient implements OAuth2Service {
         return this;
     }
 
-    public OAuth2Callback callback(Exchange exchange) {
+    public OAuth2Callback callback(Exchange exchange, OAuth2Module oAuth2Module) {
         AbstractObject abstractObject = post("/api/oauth2/token")
                 .header("User-Agent", "JWSPassportClient/1")
                 .formBodyString(new QueryString()
@@ -41,7 +42,7 @@ public class DiscordOAuth2Service extends HTTPClient implements OAuth2Service {
                         .set("client_secret", secret)
                         .set("code", exchange.rawRequest().getParameter("code"))
                         .set("grant_type", "authorization_code")
-                        .set("redirect_uri", redirectDomain+"/authorization/oauth2/"+getName()+"/callback")
+                        .set("redirect_uri", redirectDomain+oAuth2Module.getPathPrefix()+getName()+"/callback")
                         .set("scope", String.join(" ", scopes))
                         .toString()
                 )
@@ -54,9 +55,9 @@ public class DiscordOAuth2Service extends HTTPClient implements OAuth2Service {
     }
 
 
-    public Object redirect(Exchange exchange, String redirectPathPrefix) {
+    public Object redirect(Exchange exchange, OAuth2Module oAuth2Module) {
         try {
-            exchange.redirect("https://discord.com/api/oauth2/authorize?response_type=code&client_id="+clientId+"&prompt=consent&scope="+ URLEncoder.encode(String.join(" ", scopes), "UTF-8")+"&redirect_uri="+URLEncoder.encode(redirectDomain+redirectPathPrefix+getName()+"/callback", "UTF-8"));
+            exchange.redirect("https://discord.com/api/oauth2/authorize?response_type=code&client_id="+clientId+"&prompt=consent&scope="+ URLEncoder.encode(String.join(" ", scopes), "UTF-8")+"&redirect_uri="+URLEncoder.encode(redirectDomain+oAuth2Module.getPathPrefix()+getName()+"/callback", "UTF-8"));
 
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();

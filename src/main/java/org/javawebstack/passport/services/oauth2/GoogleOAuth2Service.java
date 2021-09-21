@@ -10,6 +10,7 @@ import com.google.api.services.oauth2.Oauth2;
 import com.google.api.services.oauth2.model.Userinfo;
 import org.javawebstack.httpclient.HTTPClient;
 import org.javawebstack.httpserver.Exchange;
+import org.javawebstack.passport.OAuth2Module;
 import org.javawebstack.passport.Profile;
 
 import java.io.IOException;
@@ -51,11 +52,11 @@ public class GoogleOAuth2Service extends HTTPClient implements OAuth2Service {
         return this;
     }
 
-    public OAuth2Callback callback(Exchange exchange) {
+    public OAuth2Callback callback(Exchange exchange, OAuth2Module oAuth2Module) {
         GoogleTokenResponse code = null;
         try {
             code = googleAuthorizationCodeFlow.newTokenRequest(exchange.rawRequest().getParameter("code"))
-                    .setRedirectUri(redirectDomain+"/authorization/oauth2/"+getName()+"/callback")
+                    .setRedirectUri(redirectDomain+oAuth2Module.getPathPrefix()+getName()+"/callback")
                     .execute();
         } catch (IOException e) {
             e.printStackTrace();
@@ -69,12 +70,12 @@ public class GoogleOAuth2Service extends HTTPClient implements OAuth2Service {
     }
 
 
-    public Object redirect(Exchange exchange, String redirectPathPrefix) {
+    public Object redirect(Exchange exchange, OAuth2Module oAuth2Module) {
         exchange.redirect(
                 googleAuthorizationCodeFlow
                     .newAuthorizationUrl()
                     .setAccessType("offline")
-                    .setRedirectUri(redirectDomain+redirectPathPrefix+getName()+"/callback")
+                    .setRedirectUri(redirectDomain+oAuth2Module.getPathPrefix()+getName()+"/callback")
                     .build()
         );
         return "";

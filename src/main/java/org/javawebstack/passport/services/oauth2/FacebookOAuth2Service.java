@@ -12,13 +12,13 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
 
-public class GithubOAuth2Service extends HTTPClient implements OAuth2Service {
+public class FacebookOAuth2Service extends HTTPClient implements OAuth2Service {
     private final String clientId;
     private final String secret;
     private String[] scopes = new String[]{"read:user","user:email"};
     private String redirectDomain;
 
-    public GithubOAuth2Service(String clientId, String secret, String redirectDomain){
+    public FacebookOAuth2Service(String clientId, String secret, String redirectDomain){
         setBaseUrl("https://api.github.com");
         this.clientId = clientId;
         this.secret = secret;
@@ -29,7 +29,7 @@ public class GithubOAuth2Service extends HTTPClient implements OAuth2Service {
         return "github";
     }
 
-    public GithubOAuth2Service setScopes(String[] scopes) {
+    public FacebookOAuth2Service setScopes(String[] scopes) {
         this.scopes = scopes;
         return this;
     }
@@ -48,7 +48,7 @@ public class GithubOAuth2Service extends HTTPClient implements OAuth2Service {
 
         if (abstractObject.has("scope")/* && abstractObject.get("scope").string().equals("read:user,user:email")*/) {
             Profile profile = new Profile();
-            return new OAuth2Callback(abstractObject.get("access_token").string(), getProfile(abstractObject.get("access_token").string()), new HTTPClient("https://api.github.com").authorization("token", abstractObject.get("access_token").string()));
+            return new OAuth2Callback(abstractObject.get("access_token").string(), getProfile(abstractObject.get("access_token").string()), new HTTPClient("https://api.github.com").header("Authorization", "token "+abstractObject.get("access_token").string()));
         }
 
         return null;
@@ -57,7 +57,7 @@ public class GithubOAuth2Service extends HTTPClient implements OAuth2Service {
 
     public Object redirect(Exchange exchange, OAuth2Module oAuth2Module) {
         try {
-            exchange.redirect("https://github.com/login/oauth/authorize?client_id="+clientId+"&scope="+ URLEncoder.encode(String.join(" ", scopes), "UTF-8")+"&redirect_uri="+URLEncoder.encode(redirectDomain+oAuth2Module.getPathPrefix()+getName()+"/callback", "UTF-8"));
+            exchange.redirect("https://www.facebook.com/v11.0/dialog/oauth?client_id="+clientId+"&scope="+ URLEncoder.encode(String.join(" ", scopes), "UTF-8")+"&redirect_uri="+URLEncoder.encode(redirectDomain+oAuth2Module.getPathPrefix()+getName()+"/callback", "UTF-8"));
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
             return null;
@@ -82,7 +82,7 @@ public class GithubOAuth2Service extends HTTPClient implements OAuth2Service {
         userData.forEach(profile::set);
 
         get("/user/emails")
-                .authorization("token", accessToken)
+                .header("Authorization", "token "+accessToken)
                 .data().array().forEach(abstractElement -> {
             if (profile.mail == null) {
                 profile.mail = abstractElement.object().get("email").string();

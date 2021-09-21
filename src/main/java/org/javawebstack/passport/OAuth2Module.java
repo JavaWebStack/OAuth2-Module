@@ -27,9 +27,9 @@ public class OAuth2Module implements Module {
         services.forEach(service -> {
             service.setupServer(server);
             if (service instanceof OAuth2Service) {
-                server.get(pathPrefix+service.getName(), exchange -> ((OAuth2Service) service).redirect(exchange, pathPrefix));
+                server.get(pathPrefix+service.getName(), exchange -> ((OAuth2Service) service).redirect(exchange, this));
                 server.get(pathPrefix+service.getName()+"/callback", exchange -> {
-                    OAuth2Callback callback = ((OAuth2Service) service).callback(exchange);
+                    OAuth2Callback callback = ((OAuth2Service) service).callback(exchange, this);
 
                     return oAuth2Callback.callback(service.getName(), exchange, callback);
                 });

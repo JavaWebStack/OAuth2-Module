@@ -55,7 +55,7 @@ public class TwitchOAuth2Service extends HTTPClient implements OAuth2Service {
         return "twitch";
     }
 
-    public OAuth2Callback callback(Exchange exchange) {
+    public OAuth2Callback callback(Exchange exchange, OAuth2Module oAuth2Module) {
         AbstractObject abstractObject = new HTTPClient("https://id.twitch.tv").post("/oauth2/token")
                 .formBodyString(new QueryString()
                     .set("client_id", clientId)
@@ -75,9 +75,9 @@ public class TwitchOAuth2Service extends HTTPClient implements OAuth2Service {
         return null;
     }
 
-    public Object redirect(Exchange exchange, String redirectPathPrefix) {
+    public Object redirect(Exchange exchange, OAuth2Module oAuth2Module) {
         try {
-            exchange.redirect("https://id.twitch.tv/oauth2/authorize?client_id="+clientId+"&response_type=code&scope="+ URLEncoder.encode(String.join(" ", scopes), "UTF-8")+"&redirect_uri="+URLEncoder.encode(createRedirectUrl(redirectPathPrefix), "UTF-8")+"&force_verify="+forceVerify+"&state="+state);
+            exchange.redirect("https://id.twitch.tv/oauth2/authorize?client_id="+clientId+"&response_type=code&scope="+ URLEncoder.encode(String.join(" ", scopes), "UTF-8")+"&redirect_uri="+URLEncoder.encode(createRedirectUrl(oAuth2Module.getPathPrefix()), "UTF-8")+"&force_verify="+forceVerify+"&state="+state);
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
             return null;
