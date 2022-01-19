@@ -44,7 +44,7 @@ class MyApp {
 
         // Redirect
         String callbackUrl = ".../callback";
-        oAuth2Strategy.get("interaapps").redirect(callbackUrl);
+        String redirectUrl = oAuth2Strategy.get("interaapps").redirect(callbackUrl);
         // On callback
         OAuth2Callback callback = oAuth2Strategy.get("interaapps").callback(new AbstractObject().set("code", code), callbackUrl);
         System.out.println("Hello "+callback.getProfile().name);
