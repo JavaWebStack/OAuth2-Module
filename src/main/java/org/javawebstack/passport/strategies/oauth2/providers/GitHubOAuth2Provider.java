@@ -90,5 +90,9 @@ public class GitHubOAuth2Provider extends OAuth2Provider {
                     });
             return profile;
         }
+
+        public Class<? extends OAuth2Provider> getProviderClass() {
+            return GitHubOAuth2Provider.class;
+        }
     }
 }

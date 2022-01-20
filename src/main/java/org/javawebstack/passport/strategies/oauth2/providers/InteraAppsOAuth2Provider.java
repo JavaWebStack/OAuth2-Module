@@ -91,5 +91,9 @@ public class InteraAppsOAuth2Provider extends OAuth2Provider {
             userData.forEach(profile::set);
             return profile;
         }
+
+        public Class<? extends OAuth2Provider> getProviderClass() {
+            return InteraAppsOAuth2Provider.class;
+        }
     }
 }

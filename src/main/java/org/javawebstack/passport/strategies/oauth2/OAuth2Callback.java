@@ -22,4 +22,6 @@ public abstract class OAuth2Callback {
     public String getRefreshToken() {
         return refreshToken;
     }
+
+    public abstract Class<? extends OAuth2Provider> getProviderClass();
 }

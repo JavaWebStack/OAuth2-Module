@@ -109,5 +109,10 @@ public class GoogleOAuth2Provider extends OAuth2Provider {
 
             return null;
         }
+
+
+        public Class<? extends OAuth2Provider> getProviderClass() {
+            return GoogleOAuth2Provider.class;
+        }
     }
 }

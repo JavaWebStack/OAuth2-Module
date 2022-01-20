@@ -32,7 +32,7 @@ public class OAuth2Strategy extends Strategy {
             });
 
             httpServer.get(callbackUrl, e -> {
-                return httpCallbackHandler.handle(e, oauth2.callback(e.getQueryParameters(), host+callbackUrl));
+                return httpCallbackHandler.handle(e, oauth2.callback(e.getQueryParameters(), host+callbackUrl), name);
             });
         });
     }
@@ -46,6 +46,6 @@ public class OAuth2Strategy extends Strategy {
     }
 
     public interface HttpCallbackHandler {
-        Object handle(Exchange exchange, OAuth2Callback callback);
+        Object handle(Exchange exchange, OAuth2Callback callback, String provider);
     }
 }

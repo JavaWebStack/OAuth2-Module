@@ -105,5 +105,9 @@ public class TwitchOAuth2Provider extends OAuth2Provider {
 
             return profile;
         }
+
+        public Class<? extends OAuth2Provider> getProviderClass() {
+            return TwitchOAuth2Provider.class;
+        }
     }
 }

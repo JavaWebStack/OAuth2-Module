@@ -86,5 +86,9 @@ public class DiscordOAuth2Provider extends OAuth2Provider {
 
             return profile;
         }
+
+        public Class<? extends OAuth2Provider> getProviderClass() {
+            return DiscordOAuth2Provider.class;
+        }
     }
 }
