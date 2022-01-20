@@ -1,7 +1,8 @@
-name: Maven Deploy Release
+name: Maven Deploy
 on:
-  release:
-    types: [published]
+  push:
+    branches:
+      - dev
 
 jobs:
   build:
@@ -13,7 +14,7 @@ jobs:
         with:
           java-version: 1.8
       - name: Build
-        run: mvn -B -DbuildVersion=${{ github.event.release.tag_name }} package -Dmaven.test.skip=true
+        run: mvn -B package -Dmaven.test.skip=true
       - name: Test
         run: mvn -B test
       - name: Install GPG Key
@@ -21,7 +22,7 @@ jobs:
         env:
           GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
       - name: Deploy to JavaWebStack Repository
-        run: mvn deploy -B -DbuildVersion=${{ github.event.release.tag_name }} -s build/settings.xml -Dmaven.test.skip=true
+        run: mvn deploy -B -s build/settings.xml -Dmaven.test.skip=true
         env:
           GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
           OSSRH_PASSWORD: ${{ secrets.OSSRH_PASSWORD }}

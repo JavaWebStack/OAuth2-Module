@@ -5,14 +5,13 @@
 >
     <servers>
         <server>
-            <id>javawebstack-snapshots</id>
-            <username>${env.DEPLOYMENT_USERNAME}</username>
-            <password>${env.DEPLOYMENT_PASSWORD}</password>
+            <id>ossrh</id>
+            <username>JavaWebStack</username>
+            <password>${env.OSSRH_PASSWORD}</password>
         </server>
         <server>
-            <id>javawebstack-releases</id>
-            <username>${env.DEPLOYMENT_USERNAME}</username>
-            <password>${env.DEPLOYMENT_PASSWORD}</password>
+            <id>gpg</id>
+            <passphrase>${env.GPG_PASSPHRASE}</passphrase>
         </server>
     </servers>
 </settings>
