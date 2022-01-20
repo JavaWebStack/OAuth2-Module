@@ -41,7 +41,7 @@ public class TwitchOAuth2Provider extends OAuth2Provider {
                 .data().object();
 
         if (abstractObject.has("scope")) {
-            return new OAuth2Callback(abstractObject.string("access_token"), abstractObject.string("refresh_token"), clientId);
+            return new OAuth2Callback(this, abstractObject.string("access_token"), abstractObject.string("refresh_token"), clientId);
         }
 
         return null;
@@ -77,8 +77,8 @@ public class TwitchOAuth2Provider extends OAuth2Provider {
     public static class OAuth2Callback extends org.javawebstack.passport.strategies.oauth2.OAuth2Callback {
         private String clientId;
 
-        public OAuth2Callback(String accessToken, String refreshToken, String clientId) {
-            super(accessToken, refreshToken);
+        public OAuth2Callback(OAuth2Provider provider, String accessToken, String refreshToken, String clientId) {
+            super(provider, accessToken, refreshToken);
             this.clientId = clientId;
         }
 
@@ -105,9 +105,6 @@ public class TwitchOAuth2Provider extends OAuth2Provider {
 
             return profile;
         }
-
-        public Class<? extends OAuth2Provider> getProviderClass() {
-            return TwitchOAuth2Provider.class;
-        }
     }
+
 }

@@ -40,7 +40,7 @@ public class DiscordOAuth2Provider extends OAuth2Provider {
                         .toString()
                 )
                 .data().object();
-        return new OAuth2Callback(abstractObject.string("access_token"), abstractObject.string("refresh_token"));
+        return new OAuth2Callback(this, abstractObject.string("access_token"), abstractObject.string("refresh_token"));
     }
 
     public String redirect(String callbackUrl) {
@@ -53,8 +53,8 @@ public class DiscordOAuth2Provider extends OAuth2Provider {
     }
 
     public static class OAuth2Callback extends org.javawebstack.passport.strategies.oauth2.OAuth2Callback {
-        public OAuth2Callback(String accessToken, String refreshToken) {
-            super(accessToken, refreshToken);
+        public OAuth2Callback(OAuth2Provider provider, String accessToken, String refreshToken) {
+            super(provider, accessToken, refreshToken);
         }
 
         public HTTPClient createApiClient() {
@@ -85,10 +85,6 @@ public class DiscordOAuth2Provider extends OAuth2Provider {
             data.forEach(profile::set);
 
             return profile;
-        }
-
-        public Class<? extends OAuth2Provider> getProviderClass() {
-            return DiscordOAuth2Provider.class;
         }
     }
 }

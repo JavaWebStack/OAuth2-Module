@@ -51,7 +51,7 @@ public class InteraAppsOAuth2Provider extends OAuth2Provider {
         }
 
         if (data.get("success").bool()) {
-            return new OAuth2Callback(data.string("access_token"), data.string("refresh_token"));
+            return new OAuth2Callback(this, data.string("access_token"), data.string("refresh_token"));
         }
 
         return null;
@@ -67,8 +67,8 @@ public class InteraAppsOAuth2Provider extends OAuth2Provider {
     }
 
     public static class OAuth2Callback extends org.javawebstack.passport.strategies.oauth2.OAuth2Callback {
-        public OAuth2Callback(String accessToken, String refreshToken) {
-            super(accessToken, refreshToken);
+        public OAuth2Callback(OAuth2Provider provider, String accessToken, String refreshToken) {
+            super(provider, accessToken, refreshToken);
         }
 
         public HTTPClient createApiClient() {
@@ -92,8 +92,5 @@ public class InteraAppsOAuth2Provider extends OAuth2Provider {
             return profile;
         }
 
-        public Class<? extends OAuth2Provider> getProviderClass() {
-            return InteraAppsOAuth2Provider.class;
-        }
     }
 }

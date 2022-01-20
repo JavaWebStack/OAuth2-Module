@@ -51,7 +51,7 @@ public class GoogleOAuth2Provider extends OAuth2Provider {
             GoogleTokenResponse code =googleAuthorizationCodeFlow.newTokenRequest(queryParameters.string("code"))
                     .setRedirectUri(callbackUrl)
                     .execute();
-            return new OAuth2Callback(code.getAccessToken(), code.getRefreshToken(), clientId, secret);
+            return new OAuth2Callback(this, code.getAccessToken(), code.getRefreshToken(), clientId, secret);
         } catch (IOException e) {
             return null;
         }
@@ -70,8 +70,8 @@ public class GoogleOAuth2Provider extends OAuth2Provider {
         private String clientId;
         private String secret;
 
-        public OAuth2Callback(String accessToken, String refreshToken, String clientId, String secret) {
-            super(accessToken, refreshToken);
+        public OAuth2Callback(OAuth2Provider provider, String accessToken, String refreshToken, String clientId, String secret) {
+            super(provider, accessToken, refreshToken);
             this.clientId = clientId;
             this.secret = secret;
         }
@@ -108,11 +108,6 @@ public class GoogleOAuth2Provider extends OAuth2Provider {
             }
 
             return null;
-        }
-
-
-        public Class<? extends OAuth2Provider> getProviderClass() {
-            return GoogleOAuth2Provider.class;
         }
     }
 }

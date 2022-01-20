@@ -5,8 +5,10 @@ import org.javawebstack.httpclient.HTTPClient;
 public abstract class OAuth2Callback {
     protected String accessToken;
     protected String refreshToken;
+    protected OAuth2Provider provider;
 
-    public OAuth2Callback(String accessToken, String refreshToken) {
+    public OAuth2Callback(OAuth2Provider provider, String accessToken, String refreshToken) {
+        this.provider = provider;
         this.accessToken = accessToken;
         this.refreshToken = refreshToken;
     }
@@ -23,5 +25,7 @@ public abstract class OAuth2Callback {
         return refreshToken;
     }
 
-    public abstract Class<? extends OAuth2Provider> getProviderClass();
+    public OAuth2Provider getProvider() {
+        return provider;
+    }
 }
