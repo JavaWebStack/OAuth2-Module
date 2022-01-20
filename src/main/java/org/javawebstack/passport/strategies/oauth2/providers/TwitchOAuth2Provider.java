@@ -10,7 +10,7 @@ import org.javawebstack.passport.strategies.oauth2.OAuth2Provider;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
-public class TwitchOAuth2Provider extends OAuth2Provider {
+public class TwitchOAuth2Provider implements OAuth2Provider {
     private String clientId;
     private String secret;
     private String[] scopes = {"user:read:email"}; // reference: https://dev.twitch.tv/docs/authentication/#scopes

@@ -13,7 +13,7 @@ import java.net.URLEncoder;
 import java.util.Arrays;
 import java.util.List;
 
-public class InteraAppsOAuth2Provider extends OAuth2Provider {
+public class InteraAppsOAuth2Provider implements OAuth2Provider {
     private String clientId;
     private String secret;
     private String[] scopes = {"user:read"};

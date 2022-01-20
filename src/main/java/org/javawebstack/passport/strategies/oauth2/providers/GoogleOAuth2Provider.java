@@ -17,7 +17,7 @@ import org.javawebstack.passport.strategies.oauth2.OAuth2Provider;
 import java.io.IOException;
 import java.util.Arrays;
 
-public class GoogleOAuth2Provider extends OAuth2Provider {
+public class GoogleOAuth2Provider implements OAuth2Provider {
     private String clientId;
     private String secret;
     private GoogleAuthorizationCodeFlow googleAuthorizationCodeFlow;

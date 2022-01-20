@@ -10,7 +10,7 @@ import org.javawebstack.passport.strategies.oauth2.OAuth2Provider;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
-public class DiscordOAuth2Provider extends OAuth2Provider {
+public class DiscordOAuth2Provider implements OAuth2Provider {
     private String clientId;
     private String secret;
     private String[] scopes = {"email","identify"};
