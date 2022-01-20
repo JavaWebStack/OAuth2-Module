@@ -53,7 +53,6 @@ public class GoogleOAuth2Provider extends OAuth2Provider {
                     .execute();
             return new OAuth2Callback(code.getAccessToken(), code.getRefreshToken(), clientId, secret);
         } catch (IOException e) {
-            e.printStackTrace();
             return null;
         }
     }
@@ -65,16 +64,6 @@ public class GoogleOAuth2Provider extends OAuth2Provider {
                 .setAccessType("offline")
                 .setRedirectUri(callbackUrl)
                 .build();
-    }
-
-    @Override
-    public OAuth2Callback refreshToken(AbstractObject queryParameters) {
-        return null;
-    }
-
-    @Override
-    public OAuth2Callback getFromToken(AbstractObject queryParameters) {
-        return null;
     }
 
     public static class OAuth2Callback extends org.javawebstack.passport.strategies.oauth2.OAuth2Callback {

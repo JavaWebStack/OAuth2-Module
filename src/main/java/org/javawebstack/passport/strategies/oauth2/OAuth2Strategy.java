@@ -37,6 +37,10 @@ public class OAuth2Strategy extends Strategy {
         });
     }
 
+    public Map<String, OAuth2Provider> getProviders() {
+        return providers;
+    }
+
     public void setHttpCallbackHandler(HttpCallbackHandler httpCallbackHandler) {
         this.httpCallbackHandler = httpCallbackHandler;
     }

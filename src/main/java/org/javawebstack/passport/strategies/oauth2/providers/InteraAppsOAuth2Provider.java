@@ -16,7 +16,7 @@ import java.util.List;
 public class InteraAppsOAuth2Provider extends OAuth2Provider {
     private String clientId;
     private String secret;
-    private String[] scopes = {};
+    private String[] scopes = {"user:read"};
     private HTTPClient interaAppsAccountsClient;
 
     public InteraAppsOAuth2Provider(String clientId, String secret){
@@ -64,14 +64,6 @@ public class InteraAppsOAuth2Provider extends OAuth2Provider {
             e.printStackTrace();
         }
         return "";
-    }
-
-    public OAuth2Callback refreshToken(AbstractObject queryParameters) {
-        return null;
-    }
-
-    public OAuth2Callback getFromToken(AbstractObject queryParameters) {
-        return null;
     }
 
     public static class OAuth2Callback extends org.javawebstack.passport.strategies.oauth2.OAuth2Callback {

@@ -39,7 +39,8 @@ public class GitHubOAuth2Provider extends OAuth2Provider {
 
 
         if (abstractObject.has("scope")/* && abstractObject.get("scope").string().equals("read:user,user:email")*/) {
-            return new OAuth2Callback(abstractObject.string("access_token"), abstractObject.string("refresh_token"));
+            System.out.println(abstractObject.toJsonString());
+            return new OAuth2Callback(abstractObject.string("access_token"), abstractObject.has("refresh_token") ? abstractObject.string("refresh_token") : null);
         }
 
         return null;
@@ -52,14 +53,6 @@ public class GitHubOAuth2Provider extends OAuth2Provider {
             e.printStackTrace();
         }
         return "";
-    }
-
-    public OAuth2Callback refreshToken(AbstractObject queryParameters) {
-        return null;
-    }
-
-    public OAuth2Callback getFromToken(AbstractObject queryParameters) {
-        return null;
     }
 
     public static class OAuth2Callback extends org.javawebstack.passport.strategies.oauth2.OAuth2Callback {

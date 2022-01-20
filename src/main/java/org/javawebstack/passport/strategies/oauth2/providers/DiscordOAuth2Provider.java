@@ -3,6 +3,7 @@ package org.javawebstack.passport.strategies.oauth2.providers;
 import org.javawebstack.abstractdata.AbstractObject;
 import org.javawebstack.abstractdata.util.QueryString;
 import org.javawebstack.httpclient.HTTPClient;
+import org.javawebstack.passport.strategies.oauth2.OAuth2Callback;
 import org.javawebstack.passport.strategies.oauth2.OAuth2Profile;
 import org.javawebstack.passport.strategies.oauth2.OAuth2Provider;
 
@@ -12,7 +13,7 @@ import java.net.URLEncoder;
 public class DiscordOAuth2Provider extends OAuth2Provider {
     private String clientId;
     private String secret;
-    private String[] scopes = {"read:user","user:email"};
+    private String[] scopes = {"email","identify"};
     private HTTPClient discordClient;
 
     public DiscordOAuth2Provider(String clientId, String secret){
@@ -44,19 +45,11 @@ public class DiscordOAuth2Provider extends OAuth2Provider {
 
     public String redirect(String callbackUrl) {
         try {
-            return "https://github.com/login/oauth/authorize?client_id="+clientId+"&scope="+ URLEncoder.encode(String.join(" ", scopes), "UTF-8")+"&redirect_uri="+URLEncoder.encode(callbackUrl, "UTF-8");
+            return "https://discord.com/api/oauth2/authorize?response_type=code&client_id="+clientId+"&prompt=consent&scope="+ URLEncoder.encode(String.join(" ", scopes), "UTF-8")+"&redirect_uri="+URLEncoder.encode(callbackUrl, "UTF-8");
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
         return "";
-    }
-
-    public GitHubOAuth2Provider.OAuth2Callback refreshToken(AbstractObject queryParameters) {
-        return null;
-    }
-
-    public GitHubOAuth2Provider.OAuth2Callback getFromToken(AbstractObject queryParameters) {
-        return null;
     }
 
     public static class OAuth2Callback extends org.javawebstack.passport.strategies.oauth2.OAuth2Callback {

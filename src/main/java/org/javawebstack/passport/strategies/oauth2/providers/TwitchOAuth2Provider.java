@@ -74,14 +74,6 @@ public class TwitchOAuth2Provider extends OAuth2Provider {
         return "";
     }
 
-    public GitHubOAuth2Provider.OAuth2Callback refreshToken(AbstractObject queryParameters) {
-        return null;
-    }
-
-    public GitHubOAuth2Provider.OAuth2Callback getFromToken(AbstractObject queryParameters) {
-        return null;
-    }
-
     public static class OAuth2Callback extends org.javawebstack.passport.strategies.oauth2.OAuth2Callback {
         private String clientId;
 
@@ -98,7 +90,6 @@ public class TwitchOAuth2Provider extends OAuth2Provider {
             OAuth2Profile profile = new OAuth2Profile();
 
             AbstractObject userData = createApiClient().get("/users")
-                    .bearer(accessToken)
                     .header("Client-Id", clientId)
                     .data().object().get("data").array().get(0).object();
 

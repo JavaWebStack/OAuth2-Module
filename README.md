@@ -38,6 +38,8 @@ class MyApp {
         // Creates Routes: /auth/oauth2/interaapps, /auth/oauth2/interaapps/callback
     }
 
+    
+    // JWS-Passport ships also an abstracted form of handling oauth2 
     public void oAuthWithoutHTTPServer() {
         OAuth2Strategy oAuth2Strategy = new OAuth2Strategy("http://localhost:1234");
         oAuth2Strategy.use("interaapps", new InteraAppsOAuth2Provider("myid", "mysecret").setScopes("user:read"));
@@ -45,6 +47,7 @@ class MyApp {
         // Redirect
         String callbackUrl = ".../callback";
         String redirectUrl = oAuth2Strategy.get("interaapps").redirect(callbackUrl);
+        
         // On callback
         OAuth2Callback callback = oAuth2Strategy.get("interaapps").callback(new AbstractObject().set("code", code), callbackUrl);
         System.out.println("Hello "+callback.getProfile().name);
