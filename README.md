@@ -15,8 +15,6 @@ Passport is a JWS-Module which allows you to create easily Authentication in you
 ### Example usage
 
 ```java
-import org.javawebstack.passport.services.oauth2.InteraAppsOAuth2Service;
-
 class MyApp {
     /* ... */
     protected void setup() {
